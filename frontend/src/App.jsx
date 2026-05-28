@@ -24,6 +24,7 @@ import LockedRecordsPage from './pages/LockedRecordsPage';
 
 function Sidebar({ isCollapsed, onToggleCollapse }) {
   const location = useLocation();
+  const [tooltip, setTooltip] = React.useState(null);
   
   const menuGroups = [
     {
@@ -68,85 +69,82 @@ function Sidebar({ isCollapsed, onToggleCollapse }) {
   ];
 
   return (
-    <div className={`fixed top-0 left-0 h-screen bg-white flex flex-col border-r border-gray-200 z-40 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
-      <div className={`h-20 shrink-0 bg-white border-b border-gray-100 flex items-center transition-all duration-300 ${isCollapsed ? 'px-3 flex-col justify-center gap-2' : 'px-6 justify-between'}`}>
-        <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-           <Leaf className="text-[#2563eb] fill-[#2563eb] shrink-0" size={24} />
-           {!isCollapsed && (
-             <h1 className="text-xl font-bold text-[#2563eb] tracking-tight">
-               Breathe <span className="font-medium">ESG</span>
-             </h1>
-           )}
+    <React.Fragment>
+      <div className={`fixed top-0 left-0 h-screen bg-white flex flex-col border-r border-gray-200 z-40 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
+        <div className={`h-20 shrink-0 bg-white border-b border-gray-100 flex items-center transition-all duration-300 ${isCollapsed ? 'px-3 flex-col justify-center gap-2' : 'px-6 justify-between'}`}>
+          <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+            <Leaf className="text-[#2563eb] fill-[#2563eb] shrink-0" size={24} />
+            {!isCollapsed && (
+              <h1 className="text-xl font-bold text-[#2563eb] tracking-tight">
+                Breathe <span className="font-medium">ESG</span>
+              </h1>
+            )}
+          </div>
+          <button
+            onClick={onToggleCollapse}
+            className="text-gray-400 hover:text-[#2563eb] p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
+            title={isCollapsed ? 'Expand' : 'Collapse'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
         </div>
-        <button 
-          onClick={onToggleCollapse} 
-          className="text-gray-400 hover:text-[#2563eb] p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
-          title={isCollapsed ? "Expand" : "Collapse"}
-        >
-           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
-             <polyline points="15 18 9 12 15 6"></polyline>
-           </svg>
-        </button>
+        <nav className={`flex-1 overflow-y-auto pb-6 mt-4 space-y-2 ${isCollapsed ? 'collapsed-scrollbar' : 'custom-scrollbar'}`}>
+          {menuGroups.map((group, idx) => (
+            <React.Fragment key={idx}>
+              {group.items.map((item) => {
+                const active = item.path === '/'
+                  ? location.pathname === '/'
+                  : location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    onMouseEnter={(e) => {
+                      if (isCollapsed) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setTooltip({ label: item.label, top: rect.top + rect.height / 2, left: rect.right + 12 });
+                      }
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                    className={`flex items-center transition-all duration-200 text-[15px] font-semibold ${
+                      isCollapsed
+                        ? `w-12 h-12 justify-center mx-auto rounded-xl ${active ? 'bg-[#2563eb] text-white shadow-md shadow-blue-500/20' : 'text-[#2563eb] hover:bg-[#eff6ff]'}`
+                        : `gap-3.5 py-2.5 px-4 mx-3.5 rounded-xl ${active ? 'bg-[#2563eb] text-white shadow-md shadow-blue-500/20' : 'text-[#2563eb] hover:bg-[#eff6ff]'}`
+                    }`}
+                  >
+                    <span className={`shrink-0 transition-colors duration-200 ${active ? 'text-white' : 'text-[#2563eb]'}`}>{item.icon}</span>
+                    {!isCollapsed && <span className="transition-opacity duration-300">{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </nav>
+        <div className="p-4 border-t border-[#eff6ff] bg-white shrink-0">
+          <button
+            onClick={onToggleCollapse}
+            className={`flex items-center gap-2 text-[15px] font-medium text-[#2563eb] hover:text-[#1d4ed8] transition-colors w-full ${isCollapsed ? 'justify-center' : 'px-2'}`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            {!isCollapsed && <span>Collapse</span>}
+          </button>
+        </div>
       </div>
-      <nav className="flex-1 pb-6 mt-4 space-y-2">
-        {menuGroups.map((group, idx) => (
-          <React.Fragment key={idx}>
-            {group.items.map((item) => {
-              const active = location.pathname === item.path || (location.pathname.startsWith('/review') && item.path === '/review');
-              return (
-                <Link 
-                  key={item.label} 
-                  to={item.path} 
-                  className={`flex items-center transition-all duration-200 text-[15px] font-semibold ${
-                    isCollapsed 
-                      ? `relative group w-12 h-12 justify-center mx-auto rounded-xl ${
-                          active 
-                            ? 'bg-[#2563eb] text-white shadow-md shadow-blue-500/20' 
-                            : 'text-[#2563eb] hover:bg-[#eff6ff]'
-                        }`
-                      : `gap-3.5 py-2.5 px-4 mx-3.5 rounded-xl ${
-                          active 
-                            ? 'bg-[#2563eb] text-white shadow-md shadow-blue-500/20' 
-                            : 'text-[#2563eb] hover:bg-[#eff6ff]'
-                        }`
-                  }`}
-                >
-                  <span className={`shrink-0 transition-colors duration-200 ${active ? 'text-white' : 'text-[#2563eb]'}`}>{item.icon}</span>
-                  {!isCollapsed && <span className="transition-opacity duration-300">{item.label}</span>}
-                  
-                  {isCollapsed && (
-                    <span className="absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 whitespace-nowrap shadow-md z-[60] before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:border-4 before:border-transparent before:border-r-slate-900">
-                      {item.label}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </React.Fragment>
-        ))}
-      </nav>
-      <div className="p-4 border-t border-[#eff6ff] bg-white shrink-0">
-        <button 
-          onClick={onToggleCollapse} 
-          className={`flex items-center gap-2 text-[15px] font-medium text-[#2563eb] hover:text-[#1d4ed8] transition-colors w-full ${isCollapsed ? 'justify-center' : 'px-2'}`}
+
+      {tooltip && (
+        <div
+          className="fixed z-[200] px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg shadow-md whitespace-nowrap pointer-events-none"
+          style={{ top: tooltip.top, left: tooltip.left, transform: 'translateY(-50%)' }}
         >
-           <svg 
-             width="18" 
-             height="18" 
-             viewBox="0 0 24 24" 
-             fill="none" 
-             stroke="currentColor" 
-             strokeWidth="2.5" 
-             strokeLinecap="round" 
-             strokeLinejoin="round"
-             className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}
-           >
-             <polyline points="15 18 9 12 15 6"></polyline>
-           </svg>
-           {!isCollapsed && <span>Collapse</span>}
-        </button>
-      </div>
-    </div>
+          <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900"></span>
+          {tooltip.label}
+        </div>
+      )}
+    </React.Fragment>
   );
 }
 
