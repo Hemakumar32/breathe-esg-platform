@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Upload, Database, Activity,
@@ -21,6 +21,43 @@ import FacilitiesPage from './pages/FacilitiesPage';
 import UsersPage from './pages/UsersPage';
 import AuditLogsPage from './pages/AuditLogsPage';
 import LockedRecordsPage from './pages/LockedRecordsPage';
+
+// ─── Content Area Spinner ─────────────────────────────────────────────────────
+// ─── Page Transition: spinner in content area only ───────────────────────────
+function PageTransition({ children }) {
+  const location = useLocation();
+  const [displayChildren, setDisplayChildren] = useState(children);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const t = setTimeout(() => {
+      setDisplayChildren(children);
+      setLoading(false);
+    }, 350);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  return (
+    <div style={{ position: 'relative', minHeight: '200px' }}>
+      {loading ? (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60vh',
+        }}>
+          <div className="esg-spinner" />
+        </div>
+      ) : (
+        <div style={{ opacity: 1, animation: 'contentFadeIn 250ms ease' }}>
+          {displayChildren}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Sidebar({ isCollapsed, onToggleCollapse }) {
   const location = useLocation();
@@ -374,22 +411,24 @@ function App() {
       <div className={`flex flex-col min-h-screen transition-all duration-300 ${isCollapsed ? 'pl-20' : 'pl-64'}`}>
         <TopHeader title={getTitle()} onLogout={handleLogout} />
         <main className="flex-1 p-8 overflow-x-hidden w-full">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/upload" element={<UploadPage />} />
-            <Route path="/sources" element={<DataSourcesPage />} />
-            <Route path="/review" element={<ReviewPage />} />
-            <Route path="/runs" element={<IngestionRunsPage />} />
-            <Route path="/approvals" element={<MyApprovalsPage />} />
-            <Route path="/approved" element={<ApprovedDataPage />} />
-            <Route path="/locked-records" element={<LockedRecordsPage />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/factors" element={<EmissionFactorsPage />} />
-            <Route path="/units" element={<UnitsPage />} />
-            <Route path="/facilities" element={<FacilitiesPage />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/audit" element={<AuditLogsPage />} />
-          </Routes>
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/upload" element={<UploadPage />} />
+              <Route path="/sources" element={<DataSourcesPage />} />
+              <Route path="/review" element={<ReviewPage />} />
+              <Route path="/runs" element={<IngestionRunsPage />} />
+              <Route path="/approvals" element={<MyApprovalsPage />} />
+              <Route path="/approved" element={<ApprovedDataPage />} />
+              <Route path="/locked-records" element={<LockedRecordsPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/factors" element={<EmissionFactorsPage />} />
+              <Route path="/units" element={<UnitsPage />} />
+              <Route path="/facilities" element={<FacilitiesPage />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/audit" element={<AuditLogsPage />} />
+            </Routes>
+          </PageTransition>
         </main>
       </div>
     </div>
