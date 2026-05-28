@@ -1,0 +1,5 @@
+plant,fuel_type,quantity,unit
+Plant A,Diesel,150,liters
+Plant B,Petrol,200,liters
+Plant A,Diesel,-50,liters
+Plant C,Natural Gas,100,
