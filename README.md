@@ -6,30 +6,40 @@ The platform simulates how enterprise sustainability teams onboard ESG-related o
 
 ---
 
+# Live Deployment
+
+## Frontend
+
+https://breathe-esg-platform-theta.vercel.app/login
+
+## Backend API
+
+https://breathe-esg-backend-asol.onrender.com
+
+## GitHub Repository
+
+https://github.com/Hemakumar32/breathe-esg-platform
+
+---
+
 # Features
 
-* CSV ingestion for:
+## CSV Ingestion for:
 
-  * SAP fuel/procurement data
-  * Utility electricity usage data
-  * Corporate travel data
+* SAP fuel/procurement data
+* Utility electricity usage data
+* Corporate travel data
+
+## Core Functionalities
 
 * Canonical ESG emission normalization
-
 * Scope 1 / 2 / 3 categorization
-
 * Validation engine for suspicious or incomplete records
-
 * Analyst review dashboard
-
 * Approve / Reject workflow
-
 * Immutable locked records after approval
-
 * Audit logging and traceability
-
 * PostgreSQL-backed persistence
-
 * Multi-source data handling
 
 ---
@@ -84,56 +94,60 @@ Locked records become immutable to preserve audit integrity.
 
 # Local Setup
 
-## Backend Setup
+# Backend Setup
 
 ```bash
 cd backend
+```
 
+## Create Virtual Environment
+
+```bash
 python -m venv venv
 ```
 
-### Activate Virtual Environment
+## Activate Virtual Environment
 
-Windows:
+### Windows
 
 ```bash
 venv\Scripts\activate
 ```
 
-Mac/Linux:
+### Mac/Linux
 
 ```bash
 source venv/bin/activate
 ```
 
-### Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Configure PostgreSQL
+## Configure PostgreSQL
 
 Update database settings in:
 
-```text
+```bash
 core/settings.py
 ```
 
 Ensure PostgreSQL contains a database named:
 
-```text
+```bash
 breathe_esg
 ```
 
-### Run Migrations
+## Run Migrations
 
 ```bash
 python manage.py makemigrations ingestion
 python manage.py migrate
 ```
 
-### Start Backend
+## Start Backend
 
 ```bash
 python manage.py runserver
@@ -141,7 +155,7 @@ python manage.py runserver
 
 Backend runs on:
 
-```text
+```bash
 http://localhost:8000
 ```
 
@@ -157,7 +171,7 @@ npm run dev
 
 Frontend runs on:
 
-```text
+```bash
 http://localhost:5173
 ```
 
@@ -165,31 +179,31 @@ http://localhost:5173
 
 # Deployment
 
-## Backend Deployment (Render)
+# Backend Deployment (Render)
 
-1. Create a new Web Service
-2. Connect GitHub repository
-3. Set Root Directory:
+* Create a new Web Service
+* Connect GitHub repository
+* Set Root Directory:
 
-```text
+```bash
 backend
 ```
 
-### Build Command
+## Build Command
 
-```text
+```bash
 pip install -r requirements.txt && python manage.py migrate
 ```
 
-### Start Command
+## Start Command
 
-```text
+```bash
 gunicorn core.wsgi
 ```
 
-### Environment Variables
+## Environment Variables
 
-```text
+```bash
 DATABASE_URL
 SECRET_KEY
 DEBUG=False
@@ -197,28 +211,51 @@ DEBUG=False
 
 ---
 
-## Frontend Deployment (Vercel)
+# Frontend Deployment (Vercel)
 
-1. Import GitHub repository
-2. Framework Preset: Vite
-3. Root Directory:
+* Import GitHub repository
+* Framework Preset: Vite
 
-```text
+## Root Directory
+
+```bash
 frontend
 ```
 
-### Environment Variable
+## Environment Variable
 
-Key:
+### Key
 
-```text
+```bash
 VITE_API_URL
 ```
 
-Value:
+### Value
 
-```text
-https://your-render-backend-url/api
+```bash
+https://breathe-esg-backend-asol.onrender.com/api
+```
+
+---
+
+# API Endpoints
+
+## Upload Data
+
+```bash
+/api/upload/
+```
+
+## Records
+
+```bash
+/api/records/
+```
+
+## Audit Logs
+
+```bash
+/api/audit-logs/
 ```
 
 ---
@@ -240,25 +277,51 @@ These datasets simulate real-world ESG onboarding inconsistencies such as:
 
 ---
 
-# API Endpoints
+# Screenshots
 
-## Upload Data
+## Dashboard Overview
 
-```text
-/api/upload/
-```
+* ESG analytics dashboard
+* Emission trends visualization
+* Scope distribution charts
 
-## Records
+* <img width="1919" height="955" alt="Screenshot 2026-05-28 225017" src="https://github.com/user-attachments/assets/26292383-b491-4f15-a448-890f73ce0fe1" />
 
-```text
-/api/records/
-```
+
+## Upload Workflow
+
+* SAP CSV ingestion
+* Utility ingestion
+* Corporate travel uploads
+
+  <img width="1918" height="958" alt="Screenshot 2026-05-28 225044" src="https://github.com/user-attachments/assets/38d81fb6-4465-4e71-a7ad-b0c69e110eb6" />
+
+## Review Workflow
+
+* Approve / Reject records
+* Validation issue tracking
+* Record lifecycle history
+
+  <img width="1910" height="953" alt="Screenshot 2026-05-28 225223" src="https://github.com/user-attachments/assets/ac2a231a-b69e-4b34-af17-a4bd021025f9" />
+
+
+<img width="1919" height="945" alt="Screenshot 2026-05-28 225244" src="https://github.com/user-attachments/assets/f4df08f4-5dbd-4171-ae70-8d53205b5961" />
+
+* Approved records become locked and immutable
+* Validation issues are highlighted during analyst review
+
+
+<img width="1917" height="950" alt="Screenshot 2026-05-28 225340" src="https://github.com/user-attachments/assets/3b10289b-b6da-4c01-b67e-87efd6beb5d7" />
 
 ## Audit Logs
 
-```text
-/api/audit-logs/
-```
+* Immutable audit records
+* Approval history tracking
+* System traceability logs
+
+
+
+<img width="1919" height="963" alt="Screenshot 2026-05-28 225258" src="https://github.com/user-attachments/assets/f1b1a17c-8b27-4496-b5fa-34e1351c3241" />
 
 ---
 
@@ -289,6 +352,5 @@ Potential future enhancements:
 
 GitHub Repository:
 
-```text
 https://github.com/Hemakumar32/breathe-esg-platform
-```
+
